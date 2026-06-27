@@ -6,7 +6,7 @@ const app = express();
 
 app.get("/", async (req, res) => {
     const auth = new google.auth.GoogleAuth({
-        keyFile: "credentials.json", 
+        keyFile: "/etc/secrets/credentials.json", 
         scopes: "https://www.googleapis.com/auth/spreadsheets",
     });
 
