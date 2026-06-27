@@ -51,8 +51,8 @@ app.get("/", async (req, res) => {
       //console.log(ALLDATA)
 
 
-    res.send(formatTable(data["CHENYU JIN"]));
-    //res.json(the data for the thing!!!?)
+    //res.send(formatTable(data["CHENYU JIN"]));
+    res.json(data)
     //res.render(HTML FILE LINK)
 })
 
