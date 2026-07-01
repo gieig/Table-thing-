@@ -1,12 +1,13 @@
 import express from 'express'
 import {google} from 'googleapis'
-
+import cors from 'cors'
 
 const app = express();
+app.use(cors())
 
 app.get("/", async (req, res) => {
     const auth = new google.auth.GoogleAuth({
-        keyFile: "/etc/secrets/credentials.json", 
+        keyFile: "credentials.json", 
         scopes: "https://www.googleapis.com/auth/spreadsheets",
     });
 
@@ -16,9 +17,9 @@ app.get("/", async (req, res) => {
     //instance of Google Sheets API
 
     const googleSheets = google.sheets({version: "v4", auth: client});
-    
+
     //get metadata about spreadsheet
-    const spreadsheetId = SPREADSHEET_ID 
+    const spreadsheetId = "1JNYLBABKE8Qvg43K_DL36yZlNR9WkRFsAooudCCergc"
     const metaData = await googleSheets.spreadsheets.get({
         auth, 
         spreadsheetId,
@@ -29,14 +30,17 @@ app.get("/", async (req, res) => {
     const getRows = await googleSheets.spreadsheets.values.get({
         auth, 
         spreadsheetId,
-        range: "2025-2026 Volunteer Log with hours for each correct (3).xlsx - 2025-2026.csv!A:F",
+        range: "Events!A:F",
     });
 
     const eventData = getRows.data["values"]
-
-      let data = {}
+      let nothingburger = "I exist for no purpose"
+      let data = {} 
       let namesList = []
       for(const event of eventData){
+        if(!event[5]){
+          continue
+        }
         let names = event[5].split(",").map((x) => x.trim().replace("\r", ""))
         for(const name of names){
           if(!namesList.includes(name)){
@@ -47,26 +51,10 @@ app.get("/", async (req, res) => {
             data[name.toUpperCase()]["events"].push(e)
         }
       }
-      const ALLDATA = JSON.stringify(data)
-      //console.log(ALLDATA)
+    res.json(data);
 
-
-    //res.send(formatTable(data["CHENYU JIN"]));
-    res.json(data)
-    //res.render(HTML FILE LINK)
 })
 
-function formatTable(info){
-    let totalHours = 0;
-    let table = `<h3>Volunteer ${info["name"]}: </h3> <table> <tr><th>Event</th><th>Date</th><th>Location</th><th>Hours Volunteered</th></tr>`
-    
-    for(const event of info["events"]){
-      table += `<tr><td>${event["eventName"]}</td><td>${event["date"]}</td><td>${event["location"]}</td><td>${event["hours"]}</td></tr>`
-      totalHours += parseInt(event["hours"]);
-    }
-    table = table += `</table><h3>Total Hours: ${totalHours}</h3>`
-    return table
-  }
-
-app.listen(1337, (req, res) => {console.log("running on 1337")})
+const port = process.env.PORT || 8080;
+app.listen(port, "0.0.0.0", (req, res) => {console.log(`running on ${port}`)})
 
