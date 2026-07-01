@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+    <head>
+        <style>
+            * {
+                font-family: "Montserrat" !important;
+            }
+
+            button{
+                border: hidden;
+                height: 50px;
+                width: 100%;
+                
+            }
+            button:hover{
+                    background-color: rgb(61, 61, 61);
+                    color:white
+                }
+
+            input{
+                border: hidden;
+                background-color: rgb(230, 230, 230);
+                height:50px;
+                font-size:larger;
+            }
+            #container *{
+                td{
+                    border: 1px solid black;
+                    padding: 10px;
+                    
+                }
+                tr:hover :not(td:hover, th:hover){
+                    background-color: rgb(230, 230, 230);
+                }
+                td:hover{
+                    background-color: rgb(240, 240, 240);
+                }
+                
+                th{
+                    border: 1px solid black !important;
+                    padding: 10px;
+                    height: 50px;
+                    background-color: rgb(200, 200, 200) !important;
+                }
+
+                
+
+                
+            }
+            table{
+                border-collapse:collapse;
+                width: 100%;
+                background-color: white;
+            }
+            
+            
+        </style>
+    </head>
+    <body>
+        <form name="getName" id="namesearcher" onsubmit="" >
+        <label for="n">Enter your full name here: </label>
+        <input name="n" id = "input" type="text" value = "" placeholder="Enter name here">
+        <button onclick="">Submit</button>
+        </form>
+        
+        
+        
+        
+        <div id="container"></div>
+        <script>
+            const form = document.getElementById("namesearcher")
+            form.addEventListener('submit', async function(event) {
+                event.preventDefault()
+                displayName()
+            })
+            
+            
+            async function displayName(){
+                //THE URL THAT CONTAINS THE INFORMATION FOR THE VOLUNTEER EVENT
+                const url = "Insert url here"
+                
+                try{
+                    const response = await fetch(url);
+                    if(!response.ok){
+                        throw new Error(`Response status: ${response.status}`);
+                    }
+                    const result = await response.json();
+
+                    console.log(JSON.stringify(result));
+
+                    const data = result
+
+                    const contain = document.getElementById('container')
+                    let tableHtml = "<p>nono</p>"
+                    const name = document.getElementById('input').value
+                    const volunteer = name.toUpperCase().replace(",", "");
+
+                    if(data[volunteer]){
+                        console.log(data[volunteer])
+                        tableHtml = formatTable(data[volunteer])
+                    }else{
+                        if(volunteer == ""){
+                        console.log("No name entered")
+                        tableHtml = `<p></p>`
+                        }else{
+                        console.log("Name not found")
+                        tableHtml = `<p>Name not found: ${volunteer}</p>`
+                        }
+                    }
+                    contain.innerHTML = tableHtml;
+                }catch(err){
+                    console.error(err.message);
+                }
+            }
+
+            function formatTable(info){
+                let totalHours = 0;
+                let table = `<br><h2 class="wsite-content-title" style="text-align:left;">Volunteer ${info["name"]}: </h2> <br><table id="hourTable"> <tr><th>Event</th><th>Date</th><th>Location</th><th>Hours Volunteered</th></tr>`
+                
+                for(const event of info["events"]){
+                table += `<tr><td>${event["eventName"]}</td><td>${event["date"]}</td><td>${event["location"]}</td><td>${event["hours"]}</td></tr>`
+                totalHours += parseInt(event["hours"]);
+                }
+                table = table += `</table><h2 class="wsite-content-title" style="text-align:left;"> <br>Total Hours: ${totalHours}</h2>`
+                return table
+            }
+            
+
+
+        </script>
+
+
+    </body>
+</html>
