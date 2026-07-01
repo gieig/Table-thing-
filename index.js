@@ -19,7 +19,7 @@ app.get("/", async (req, res) => {
     const googleSheets = google.sheets({version: "v4", auth: client});
 
     //get metadata about spreadsheet
-    const spreadsheetId = "1JNYLBABKE8Qvg43K_DL36yZlNR9WkRFsAooudCCergc"
+    const spreadsheetId = "Insert Spreadsheet Id Here"
     const metaData = await googleSheets.spreadsheets.get({
         auth, 
         spreadsheetId,
